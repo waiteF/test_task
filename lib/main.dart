@@ -33,23 +33,17 @@ class _HelloThereState extends State<HelloThere> {
   int _count = 0;
   bool _autoColorChange = false;
   Timer? _timer;
+  double _fontSize = 36.0;
 
-  /// Changes the background color to a random color.
-  void _changeBackgroundColor() {
+  void _changeColor() {
     setState(() {
       _backgroundColor =
           Color(Random().nextInt(_maxColorValue)).withOpacity(1.0);
-    });
-  }
-
-  /// Changes the text color to a random color.
-  void _changeTextColor() {
-    setState(() {
       _textColor = Color(Random().nextInt(_maxColorValue)).withOpacity(1.0);
+      _count++;
     });
   }
 
-  /// Toggles the auto color change mode.
   void _toggleAutoColorChange() {
     setState(() {
       _autoColorChange = !_autoColorChange;
@@ -57,25 +51,29 @@ class _HelloThereState extends State<HelloThere> {
 
     if (_autoColorChange) {
       _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-        _changeBackgroundColor();
-        _changeTextColor();
-        _count++;
+        _changeColor();
       });
     } else {
       _timer?.cancel();
     }
   }
 
+  void _increaseFontSize() {
+    setState(() {
+      _fontSize += 2;
+    });
+  }
+
+  void _decreaseFontSize() {
+    setState(() {
+      _fontSize -= 2;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        _changeBackgroundColor();
-        _changeTextColor();
-        setState(() {
-          _count++;
-        });
-      },
+      onTap: _changeColor,
       child: Scaffold(
         backgroundColor: _backgroundColor,
         body: Stack(
@@ -83,8 +81,11 @@ class _HelloThereState extends State<HelloThere> {
             Center(
               child: Text(
                 'Hello there',
-                style: TextStyle(fontSize: 36.0, fontWeight: FontWeight.bold,
-                    color: _textColor,),
+                style: TextStyle(
+                  fontSize: _fontSize,
+                  fontWeight: FontWeight.bold,
+                  color: _textColor,
+                ),
               ),
             ),
             Positioned(
@@ -92,19 +93,43 @@ class _HelloThereState extends State<HelloThere> {
               right: 16,
               child: Text(
                 'Count: $_count',
-                style: const TextStyle(fontSize: 16.0, fontWeight:
-                  FontWeight.bold, color: Colors.white,
+                style: const TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
             ),
             Positioned(
               top: 56,
               right: 16,
-              child: ElevatedButton(
-                onPressed: _toggleAutoColorChange,
-                child: Text(_autoColorChange ? 'Stop' : 'Auto'),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    onPressed: _toggleAutoColorChange,
+                    child: Text(_autoColorChange ? 'Stop' : 'Auto'),
+                  ),
+                ],
               ),
             ),
+            Positioned(
+                top: 95,
+                right: 16,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: _increaseFontSize,
+                      child: const Icon(Icons.add),
+                    ),
+                    ElevatedButton(
+                      onPressed: _decreaseFontSize,
+                      child: const Icon(Icons.remove),
+                    ),
+                  ],
+            ),
+            )
           ],
         ),
       ),
